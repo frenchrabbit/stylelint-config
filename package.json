@@ -1,0 +1,50 @@
+{
+  "name": "@frabbit/stylelint-config",
+  "version": "1.0.1",
+  "description": "Modern Stylelint config for Vue and SCSS projects with TypeScript support",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "pnpm build",
+    "release": "bumpp"
+  },
+  "keywords": [
+    "stylelint",
+    "stylelint-config",
+    "vue",
+    "scss",
+    "css"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.24.0",
+  "peerDependencies": {
+    "stylelint": "^16.0.0"
+  },
+  "dependencies": {
+    "stylelint-config-recommended-vue": "^1.5.0",
+    "stylelint-config-standard-scss": "^13.1.0",
+    "stylelint-order": "^6.0.4",
+    "stylelint-value-no-unknown-custom-properties": "^6.1.0",
+    "postcss-html": "^1.7.0",
+    "postcss-scss": "^4.0.9"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "bumpp": "^9.0.0",
+    "stylelint": "^16.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
