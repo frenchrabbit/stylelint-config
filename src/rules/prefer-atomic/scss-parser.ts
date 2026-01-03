@@ -1,4 +1,4 @@
-import postcss from 'postcss'
+import type { Rule as PostcssRule, AtRule as PostcssAtRule, Declaration as PostcssDeclaration } from 'postcss'
 import postcssScss from 'postcss-scss'
 import { readFileSync } from 'fs'
 import { dirname } from 'path'
@@ -18,7 +18,7 @@ export class ScssParser {
   /**
    * Parse SCSS file and extract atomic classes
    */
-  parseAtomicClasses(filePath: string, baseDir: string = process.cwd()): AtomicClass[] {
+  parseAtomicClasses(filePath: string): AtomicClass[] {
     const content = readFileSync(filePath, 'utf-8')
     const root = postcssScss.parse(content)
     // Use dirname of filePath as base for variable resolution
@@ -59,7 +59,7 @@ export class ScssParser {
    * Extract atomic class properties from a rule node
    */
   private extractAtomicClass(
-    rule: postcss.Rule,
+    rule: PostcssRule,
     className: string,
     variables: Map<string, string>
   ): AtomicClass | null {
@@ -67,7 +67,7 @@ export class ScssParser {
     const mixins = new Map<string, Map<string, string>>()
 
     // Extract base properties
-    rule.walkDecls((decl) => {
+    rule.walkDecls((decl: PostcssDeclaration) => {
       const prop = decl.prop
       const value = this.variableResolver.replaceVariables(decl.value, variables)
       properties.set(prop, value)
@@ -75,7 +75,7 @@ export class ScssParser {
 
     // Extract properties from @include blocks
     // In postcss-scss, @include is parsed as an at-rule
-    rule.walkAtRules((atRule) => {
+    rule.walkAtRules((atRule: PostcssAtRule) => {
       // Check for @include or @mixin
       if (atRule.name === 'include' || atRule.name === 'mixin') {
         const mixinName = this.extractMixinName(atRule)
@@ -83,15 +83,15 @@ export class ScssParser {
           const mixinProperties = new Map<string, string>()
 
           // Walk declarations inside the mixin block
-          atRule.walkDecls((decl) => {
+          atRule.walkDecls((decl: PostcssDeclaration) => {
             const prop = decl.prop
             const value = this.variableResolver.replaceVariables(decl.value, variables)
             mixinProperties.set(prop, value)
           })
 
           // Also check nested rules (for nested @include or media queries)
-          atRule.walkRules((nestedRule) => {
-            nestedRule.walkDecls((decl) => {
+          atRule.walkRules((nestedRule: PostcssRule) => {
+            nestedRule.walkDecls((decl: PostcssDeclaration) => {
               const prop = decl.prop
               const value = this.variableResolver.replaceVariables(decl.value, variables)
               mixinProperties.set(prop, value)
@@ -120,7 +120,7 @@ export class ScssParser {
   /**
    * Extract mixin name with parameters from @include directive
    */
-  private extractMixinName(atRule: postcss.AtRule): string {
+  private extractMixinName(atRule: PostcssAtRule): string {
     // Get full mixin signature: mixin-name(params)
     const params = atRule.params || ''
     const mixinName = atRule.name === 'include' ? params : `${atRule.name}(${params})`

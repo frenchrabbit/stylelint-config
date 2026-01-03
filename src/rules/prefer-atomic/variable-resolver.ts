@@ -1,4 +1,4 @@
-import postcss from 'postcss'
+import type { Root as PostcssRoot, Declaration as PostcssDeclaration } from 'postcss'
 import postcssScss from 'postcss-scss'
 import { readFileSync, existsSync } from 'fs'
 import { resolve, dirname, join, isAbsolute } from 'path'
@@ -83,8 +83,8 @@ export class VariableResolver {
   /**
    * Collect variable declarations from a PostCSS root
    */
-  private collectVariables(root: postcss.Root, variables: VariableMap): void {
-    root.walkDecls((decl) => {
+  private collectVariables(root: PostcssRoot, variables: VariableMap): void {
+    root.walkDecls((decl: PostcssDeclaration) => {
       // Match SCSS variables: $variable-name: value;
       if (decl.prop.startsWith('$')) {
         const varName = decl.prop

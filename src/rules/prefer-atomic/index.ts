@@ -11,12 +11,14 @@ const { report, ruleMessages, validateOptions } = utils
 const ruleName = 'frabbit/prefer-atomic'
 
 const messages = ruleMessages(ruleName, {
-  fullMatch: (className: string, mixinInfo?: string) => {
+  fullMatch: (className: string, mixinInfo: string) => {
     const base = `Use atomic class ".${className}" instead of declaring these properties separately.`
     return mixinInfo
       ? `${base} Note: .${className} has ${mixinInfo}, verify responsiveness matches your design.`
       : base
   },
+  fullMatchNoMixin: (className: string) =>
+    `Use atomic class ".${className}" instead of declaring these properties separately.`,
   partialMatch: (
     className: string,
     matchedProps: string,
@@ -49,14 +51,15 @@ const ruleFunction: Rule = (primary, secondary) => {
       },
       {
         actual: secondary,
-        possible: (options) => {
+        possible: (options: unknown): options is PreferAtomicOptions => {
           if (!options || typeof options !== 'object') {
             return false
           }
-          if (!Array.isArray(options.atomicFiles)) {
+          const opts = options as Record<string, unknown>
+          if (!Array.isArray(opts.atomicFiles)) {
             return false
           }
-          return options.atomicFiles.every((file: unknown) => typeof file === 'string')
+          return opts.atomicFiles.every((file: unknown) => typeof file === 'string')
         },
       }
     )
@@ -121,16 +124,22 @@ const ruleFunction: Rule = (primary, secondary) => {
 
         if (matchType === 'full') {
           // Full match - suggest using atomic class
-          const mixinInfo = matcher.hasResponsiveMixins(atomicClass)
-            ? matcher.formatMixins(atomicClass)
-            : undefined
-
-          report({
-            result,
-            ruleName,
-            message: messages.fullMatch(atomicClass.name, mixinInfo),
-            node: rule,
-          })
+          if (matcher.hasResponsiveMixins(atomicClass)) {
+            const mixinInfo = matcher.formatMixins(atomicClass)
+            report({
+              result,
+              ruleName,
+              message: messages.fullMatch(atomicClass.name, mixinInfo),
+              node: rule,
+            })
+          } else {
+            report({
+              result,
+              ruleName,
+              message: messages.fullMatchNoMixin(atomicClass.name),
+              node: rule,
+            })
+          }
         } else if (matchType === 'partial') {
           // Partial match - suggest using atomic class with override
           const matchedPropsStr = matchedProperties
