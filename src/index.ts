@@ -85,6 +85,7 @@ export function defineConfig(options: StylelintConfigOptions = {}): Config {
     scss = true,
     order = true,
     customPropertiesFiles = [],
+    atomicFiles = [],
     rules = {},
     ignoreFiles,
     overrides = [],
@@ -127,6 +128,19 @@ export function defineConfig(options: StylelintConfigOptions = {}): Config {
         true,
         {
           importFrom: customPropertiesFiles,
+        },
+      ],
+    }
+  }
+
+  // Add prefer-atomic rule if atomic files are provided
+  if (atomicFiles.length > 0) {
+    config.rules = {
+      ...config.rules,
+      'frabbit/prefer-atomic': [
+        true,
+        {
+          atomicFiles: atomicFiles,
         },
       ],
     }

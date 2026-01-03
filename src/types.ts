@@ -50,4 +50,11 @@ export interface StylelintConfigOptions {
    * @default false
    */
   legacySass?: boolean
+
+  /**
+   * Paths to SCSS/CSS files containing atomic classes (starting with ._)
+   * Used for `prefer-atomic` rule
+   * @default []
+   */
+  atomicFiles?: string[]
 }
