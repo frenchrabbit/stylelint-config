@@ -59,12 +59,14 @@ export class AtomicMatcher {
   ): MatchResult | null {
     const matchedProperties: string[] = []
     const differingProperties: string[] = []
+    const checkedProperties: string[] = []
 
-    // Check base properties
-    for (const [prop, atomicValue] of atomicClass.properties.entries()) {
-      const providedValue = properties.get(prop)
-
-      if (providedValue !== undefined) {
+    // Check which properties from the provided code exist in atomic class
+    for (const [prop, providedValue] of properties.entries()) {
+      const atomicValue = atomicClass.properties.get(prop)
+      
+      if (atomicValue !== undefined) {
+        checkedProperties.push(prop)
         if (valuesMatch(providedValue, atomicValue)) {
           matchedProperties.push(prop)
         } else {
@@ -73,12 +75,16 @@ export class AtomicMatcher {
       }
     }
 
-    // Determine match type
-    const totalAtomicProps = atomicClass.properties.size
     const matchedCount = matchedProperties.length
+    const totalChecked = checkedProperties.length
+    
+    // Need at least 1 matching property and 2+ checked properties to trigger
+    if (matchedCount === 0 || totalChecked < 2) {
+      return null
+    }
 
-    // Full match: all atomic properties are present and match
-    if (matchedCount === totalAtomicProps && differingProperties.length === 0) {
+    // Full match: all checked properties match (no differing properties)
+    if (differingProperties.length === 0 && matchedCount >= 2) {
       return {
         atomicClass,
         matchType: 'full',
@@ -87,9 +93,8 @@ export class AtomicMatcher {
       }
     }
 
-    // Partial match: at least 2 properties match (or N-1 if N > 2)
-    const minMatchCount = totalAtomicProps > 2 ? totalAtomicProps - 1 : 2
-    if (matchedCount >= minMatchCount && matchedCount < totalAtomicProps) {
+    // Partial match: at least 1 property matches and 2+ properties are checked
+    if (matchedCount >= 1 && totalChecked >= 2) {
       return {
         atomicClass,
         matchType: 'partial',

@@ -119,7 +119,16 @@ const ruleFunction: Rule = (primary, secondary) => {
       // Find matches
       const matches = matcher.findMatches(properties, atomicClasses)
 
-      for (const match of matches) {
+      // Sort matches: full matches first, then partial matches
+      const sortedMatches = matches.sort((a, b) => {
+        if (a.matchType === 'full' && b.matchType === 'partial') return -1
+        if (a.matchType === 'partial' && b.matchType === 'full') return 1
+        return 0
+      })
+
+      // Report only the best match (first one)
+      if (sortedMatches.length > 0) {
+        const match = sortedMatches[0]
         const { atomicClass, matchType, matchedProperties, differingProperties } = match
 
         if (matchType === 'full') {

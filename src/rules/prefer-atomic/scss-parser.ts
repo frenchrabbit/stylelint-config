@@ -66,15 +66,9 @@ export class ScssParser {
     const properties = new Map<string, string>()
     const mixins = new Map<string, Map<string, string>>()
 
-    // Extract base properties
-    rule.walkDecls((decl: PostcssDeclaration) => {
-      const prop = decl.prop
-      const value = this.variableResolver.replaceVariables(decl.value, variables)
-      properties.set(prop, value)
-    })
-
-    // Extract properties from @include blocks
-    // In postcss-scss, @include is parsed as an at-rule
+    // First, collect all @include blocks to know which declarations are inside mixins
+    const mixinDeclarations = new Set<PostcssDeclaration>()
+    
     rule.walkAtRules((atRule: PostcssAtRule) => {
       // Check for @include or @mixin
       if (atRule.name === 'include' || atRule.name === 'mixin') {
@@ -84,6 +78,7 @@ export class ScssParser {
 
           // Walk declarations inside the mixin block
           atRule.walkDecls((decl: PostcssDeclaration) => {
+            mixinDeclarations.add(decl)
             const prop = decl.prop
             const value = this.variableResolver.replaceVariables(decl.value, variables)
             mixinProperties.set(prop, value)
@@ -92,6 +87,7 @@ export class ScssParser {
           // Also check nested rules (for nested @include or media queries)
           atRule.walkRules((nestedRule: PostcssRule) => {
             nestedRule.walkDecls((decl: PostcssDeclaration) => {
+              mixinDeclarations.add(decl)
               const prop = decl.prop
               const value = this.variableResolver.replaceVariables(decl.value, variables)
               mixinProperties.set(prop, value)
@@ -102,6 +98,16 @@ export class ScssParser {
             mixins.set(mixinName, mixinProperties)
           }
         }
+      }
+    })
+
+    // Extract base properties (excluding those inside mixins)
+    rule.walkDecls((decl: PostcssDeclaration) => {
+      // Skip declarations that are inside @include blocks
+      if (!mixinDeclarations.has(decl)) {
+        const prop = decl.prop
+        const value = this.variableResolver.replaceVariables(decl.value, variables)
+        properties.set(prop, value)
       }
     })
 

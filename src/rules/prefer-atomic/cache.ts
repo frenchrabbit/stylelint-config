@@ -54,8 +54,8 @@ export class AtomicClassCache {
       return cached.atomicClasses
     }
 
-    // Parse and cache (use dirname of absolutePath as base for parsing)
-    const atomicClasses = this.scssParser.parseAtomicClasses(absolutePath, dirname(absolutePath))
+    // Parse and cache
+    const atomicClasses = this.scssParser.parseAtomicClasses(absolutePath)
     this.cache.set(absolutePath, {
       atomicClasses,
       mtime: currentMtime,

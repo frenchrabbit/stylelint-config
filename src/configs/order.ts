@@ -145,12 +145,7 @@ export const orderConfig: Config = {
         'will-change',
       ],
       {
-        type: 'at-rule',
-        name: 'include',
-      },
-      {
-        type: 'at-rule',
-        name: 'media',
+        unspecified: 'bottomAlphabetical',
       },
     ],
     'order/properties-alphabetical-order': null,
