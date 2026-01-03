@@ -1,6 +1,6 @@
 import type { Config } from 'stylelint'
 import { baseConfig } from './configs/base'
-import { scssConfig } from './configs/scss'
+import { createScssConfig } from './configs/scss'
 import { vueConfig } from './configs/vue'
 import { orderConfig } from './configs/order'
 import type { StylelintConfigOptions } from './types'
@@ -88,13 +88,14 @@ export function defineConfig(options: StylelintConfigOptions = {}): Config {
     rules = {},
     ignoreFiles,
     overrides = [],
+    legacySass = false,
   } = options
 
   const configs: Config[] = [baseConfig]
 
   // Add SCSS config
   if (scss) {
-    configs.push(scssConfig)
+    configs.push(createScssConfig({ legacySass }))
   }
 
   // Add Vue config

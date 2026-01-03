@@ -14,4 +14,12 @@ export const baseConfig: Config = {
     '**/.output/**',
     '**/.vite/**',
   ],
+  rules: {
+    'selector-class-pattern': [
+      '^[-_]?[a-z][a-z0-9-]*$',
+      {
+        message: 'Class selector must be kebab-case, optionally prefixed with "-" (modifier) or "_" (atomic)',
+      },
+    ],
+  },
 }

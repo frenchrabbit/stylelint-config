@@ -43,4 +43,11 @@ export interface StylelintConfigOptions {
    * Additional overrides
    */
   overrides?: Config['overrides']
+
+  /**
+   * Enable legacy Sass @import syntax (deprecated)
+   * When false, enables prefer-modern-import rule with autofix
+   * @default false
+   */
+  legacySass?: boolean
 }
