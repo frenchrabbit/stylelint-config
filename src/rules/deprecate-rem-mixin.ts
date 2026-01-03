@@ -30,7 +30,13 @@ const meta = {
  */
 const ruleFunction: Rule = (primary) => {
   return (root, result) => {
-    if (!validateOptions(result, ruleName, { actual: primary, possible: [true] })) {
+    // Accept true, 'warn', 'warning', or 'error'
+    if (!validateOptions(result, ruleName, { actual: primary, possible: [true, 'warn', 'warning', 'error'] })) {
+      return
+    }
+
+    // Skip if rule is disabled
+    if (primary === false) {
       return
     }
 
