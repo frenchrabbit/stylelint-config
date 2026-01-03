@@ -20,8 +20,8 @@ export function createScssConfig(options: { legacySass?: boolean } = {}): Config
       // Allow SCSS-specific at-rules
       'at-rule-no-unknown': null,
       'scss/at-rule-no-unknown': true,
-      // Ignore rem() mixin - we have our own rule for it
-      'declaration-property-value-no-unknown': [
+      // Ignore rem() function - we have our own rule for it
+      'scss/function-no-unknown': [
         true,
         { ignoreFunctions: ['rem'] },
       ],
