@@ -9,6 +9,7 @@ export function createScssConfig(options: { legacySass?: boolean } = {}): Config
 
   const config: Config = {
     extends: ['stylelint-config-standard-scss'],
+    plugins: plugin,
     overrides: [
       {
         files: ['*.scss', '**/*.scss'],
@@ -19,12 +20,16 @@ export function createScssConfig(options: { legacySass?: boolean } = {}): Config
       // Allow SCSS-specific at-rules
       'at-rule-no-unknown': null,
       'scss/at-rule-no-unknown': true,
+      // Ignore rem() mixin - we have our own rule for it
+      'declaration-property-value-no-unknown': [
+        true,
+        { ignoreFunctions: ['rem'] },
+      ],
     },
   }
 
-  // Add plugin and rule for modern Sass syntax when legacySass is false
+  // Add rules for modern Sass syntax when legacySass is false
   if (!legacySass) {
-    config.plugins = plugin
     config.rules = {
       ...config.rules,
       'frabbit/prefer-modern-import': true,
