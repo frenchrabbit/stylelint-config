@@ -27,7 +27,14 @@ export function createScssConfig(options: { legacySass?: boolean } = {}): Config
       ],
       // Use SCSS-specific rule that natively understands SCSS syntax
       'declaration-property-value-no-unknown': null,
-      'scss/declaration-property-value-no-unknown': true,
+      'scss/declaration-property-value-no-unknown': [
+        true,
+        {
+          ignoreProperties: {
+            '/.+/': ['/rem\\(/'],
+          },
+        },
+      ],
     },
   }
 
