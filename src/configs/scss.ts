@@ -25,15 +25,9 @@ export function createScssConfig(options: { legacySass?: boolean } = {}): Config
         true,
         { ignoreFunctions: ['rem'] },
       ],
-      // Ignore rem() in property values - custom SCSS mixin
-      'declaration-property-value-no-unknown': [
-        true,
-        {
-          ignoreProperties: {
-            '/.+/': ['/rem\\(/'],
-          },
-        },
-      ],
+      // Use SCSS-specific rule that natively understands SCSS syntax
+      'declaration-property-value-no-unknown': null,
+      'scss/declaration-property-value-no-unknown': true,
     },
   }
 
